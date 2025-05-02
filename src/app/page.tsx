@@ -1,91 +1,67 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
+import {Advocate} from "@/app/ui/interfaces/advocates";
+import {AdvocatesTable} from "@/app/ui/components/advocatesTable";
+import {useAdvocates} from "@/app/ui/hooks/useAdvocates";
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Fetch the advocates data using the custom hook
+  const { advocates, isLoading, error } = useAdvocates(setFilteredAdvocates);
 
   useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
-  }, []);
-
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
-
-    document.getElementById("search-term").innerHTML = searchTerm;
-
-    console.log("filtering advocates...");
+    // When the component mounts, set the filtered advocates to the full list
     const filteredAdvocates = advocates.filter((advocate) => {
       return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
+          advocate.firstName.includes(searchTerm) ||
+          advocate.lastName.includes(searchTerm) ||
+          advocate.city.includes(searchTerm) ||
+          advocate.degree.includes(searchTerm) ||
+          advocate.specialties.includes(searchTerm) ||
+          advocate.yearsOfExperience.toString().includes(searchTerm)
       );
     });
 
     setFilteredAdvocates(filteredAdvocates);
-  };
+  }, [searchTerm]); // re-run when searchTerm changes
 
   const onClick = () => {
-    console.log(advocates);
-    setFilteredAdvocates(advocates);
+      setSearchTerm('')
+      setFilteredAdvocates(advocates);
   };
 
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
-      </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
-        </thead>
-        <tbody>
-          {filteredAdvocates.map((advocate, index) => {
-            return (
-              <tr key={index}>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div>{s}</div>
-                  ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </main>
+      <main className="p-6 bg-[#FAFAFA] min-h-screen text-[#2D2D2D]">
+          <h1 className="text-4xl font-bold mb-6">Solace Advocates</h1>
+
+          <div className="mb-8">
+              <p className="text-lg font-medium mb-2">Search</p>
+              <p className="mb-2">
+                  Searching for: <span id="search-term" className="font-semibold" />
+              </p>
+              <div className="flex items-center gap-4">
+                  <input
+                      className="px-4 py-2 border border-gray-300 rounded bg-white text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+                      placeholder="Enter search term"
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={searchTerm}
+                  />
+                  <button
+                      onClick={onClick}
+                      className="px-4 py-2 bg-[#4A90E2] text-white font-semibold rounded hover:bg-[#3A78C2] transition-colors"
+                  >
+                      Reset Search
+                  </button>
+              </div>
+          </div>
+
+          <AdvocatesTable
+            filteredAdvocates={filteredAdvocates}
+            isLoading={isLoading}
+            error={error}
+          />
+      </main>
   );
 }
