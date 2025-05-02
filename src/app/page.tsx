@@ -27,8 +27,8 @@ export default function Home() {
   }, [searchTerm]); // re-run when searchTerm changes
 
   const onClick = () => {
-    console.log(advocates);
-    setFilteredAdvocates(advocates);
+      setSearchTerm('')
+      setFilteredAdvocates(advocates);
   };
 
   return (
@@ -45,6 +45,7 @@ export default function Home() {
                       className="px-4 py-2 border border-gray-300 rounded bg-white text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
                       placeholder="Enter search term"
                       onChange={(e) => setSearchTerm(e.target.value)}
+                      value={searchTerm}
                   />
                   <button
                       onClick={onClick}
