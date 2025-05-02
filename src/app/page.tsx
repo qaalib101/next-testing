@@ -2,21 +2,13 @@
 import {useEffect, useState} from "react";
 import {Advocate} from "@/app/ui/interfaces/advocates";
 import {AdvocatesTable} from "@/app/ui/components/advocatesTable";
+import {useAdvocates} from "@/app/ui/hooks/useAdvocates";
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
-  }, []);
+  const { advocates, isLoading, error } = useAdvocates(setFilteredAdvocates);
 
   useEffect(() => {
     console.log("filtering advocates...");
@@ -65,9 +57,8 @@ export default function Home() {
 
           <AdvocatesTable
             filteredAdvocates={filteredAdvocates}
-            setFilteredAdvocates={setFilteredAdvocates}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            isLoading={isLoading}
+            error={error}
           />
       </main>
   );
