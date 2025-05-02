@@ -33,6 +33,7 @@ export const AdvocatesTable = (props: {
 
     const rows = filteredAdvocates.map((advocate, index) => ({
         ...advocate,
+        // needs to be a string for the DataGrid
         id: advocate.id.toString(),
     }));
 

@@ -8,10 +8,11 @@ export default function Home() {
   const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // Fetch the advocates data using the custom hook
   const { advocates, isLoading, error } = useAdvocates(setFilteredAdvocates);
 
   useEffect(() => {
-    console.log("filtering advocates...");
+    // When the component mounts, set the filtered advocates to the full list
     const filteredAdvocates = advocates.filter((advocate) => {
       return (
           advocate.firstName.includes(searchTerm) ||
